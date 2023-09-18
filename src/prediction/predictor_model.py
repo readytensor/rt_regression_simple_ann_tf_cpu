@@ -10,6 +10,7 @@ from sklearn.exceptions import NotFittedError
 from tensorflow.keras.callbacks import Callback, EarlyStopping, LambdaCallback
 from tensorflow.keras.layers import Dense, Input
 from tensorflow.keras.models import Model
+import tensorflow_addons as tfa
 from tensorflow.keras.optimizers import Adam, SGD
 
 from logger import get_logger
@@ -153,8 +154,9 @@ class Regressor:
         # model.summary()
         model.compile(
             loss='mse',
-            optimizer=SGD(learning_rate=self.lr),
-            metrics=["mse"],
+            # optimizer=SGD(learning_rate=self.lr),
+            optimizer=Adam(learning_rate=self.lr),
+            metrics=[tfa.metrics.RSquare(dtype=tf.float32)]
         )
         return model
 
@@ -218,7 +220,7 @@ class Regressor:
             numpy.ndarray: The predicted targets.
         """
         preds = self.model.predict(inputs, verbose=True)
-        return preds
+        return np.squeeze(preds)
 
     def summary(self):
         """Return model summary of the Tensorflow model"""
@@ -282,25 +284,6 @@ class Regressor:
             f"D: {self.D}, "
             f"lr: {self.lr})"
         )
-
-
-def train_predictor_model(
-    train_inputs: pd.DataFrame, train_targets: pd.Series, hyperparameters: dict
-) -> Regressor:
-    """
-    Instantiate and train the predictor model.
-
-    Args:
-        train_X (pd.DataFrame): The training data inputs.
-        train_y (pd.Series): The training data labels.
-        hyperparameters (dict): Hyperparameters for the regressor.
-
-    Returns:
-        'Regressor': The regressor model
-    """
-    regressor = Regressor(**hyperparameters)
-    regressor.fit(train_inputs=train_inputs, train_targets=train_targets)
-    return regressor
 
 
 def train_predictor_model(
