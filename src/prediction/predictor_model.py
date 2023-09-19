@@ -371,5 +371,5 @@ def save_training_history(history, dir_path):
     """
     hist_df = pd.DataFrame(history.history)
     hist_json_file = os.path.join(dir_path, HISTORY_FNAME)
-    with open(hist_json_file, mode="w") as file_:
+    with open(hist_json_file, mode="w", encoding="utf-8") as file_:
         hist_df.to_json(file_)
