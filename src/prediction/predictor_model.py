@@ -219,8 +219,11 @@ class Regressor:
         Returns:
             numpy.ndarray: The predicted targets.
         """
-        preds = self.model.predict(inputs, verbose=True)
-        return np.squeeze(preds)
+        preds = np.squeeze(self.model.predict(inputs, verbose=True))
+        # Check if the prediction is a scalar
+        if np.ndim(preds) == 0:
+            preds = np.reshape(preds, [1])
+        return preds
 
     def summary(self):
         """Return model summary of the Tensorflow model"""
